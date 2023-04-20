@@ -1,6 +1,6 @@
-import List from './List';
-import Search from './Search';
-import {useState} from 'react';
+import List from "./List";
+import Search from "./Search";
+import useSemiPersistentState from "./util/PersistentState";
 
 const section = () => "F1";
 
@@ -24,17 +24,19 @@ function App() {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "REACT");
+  const [dup, setDup] = useSemiPersistentState("dup", "DUP");
 
   const searchOnChangeHandler = (event) => {
     console.log(event.target.value);
+
     setSearchTerm(event.target.value);
+    setDup(event.target.value + "_DUPLICATE");
   };
 
-  let filteredTechs = techs.filter(item => 
-    item.title
-    .toLocaleLowerCase()
-    .includes(searchTerm.toLocaleLowerCase()));
+  let filteredTechs = techs.filter((item) =>
+    item.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  );
 
   return (
     <>
@@ -42,8 +44,11 @@ function App() {
       <hr />
       <h1>Technologies</h1>
 
-      <Search searchTerm={searchTerm} onSearchTermChange={searchOnChangeHandler}/>
-      <List list={filteredTechs}/>
+      <Search
+        searchTerm={searchTerm}
+        onSearchTermChange={searchOnChangeHandler}
+      />
+      <List list={filteredTechs} />
     </>
   );
 }
